@@ -8,10 +8,9 @@ Created on 19 Mar, 2024 at 15:11
 
 # Importing Modules
 import pathlib
-import rasterio
-import xarray as xr
+
 import rioxarray as rio
-import h5py as h5
+from affine import Affine
 
 # Importing Custom Modules
 import browse_gui
@@ -25,11 +24,25 @@ def main(prod_path, save_dir):
 
     #data_h5 = h5.File(path, 'r')
 
-    with rio.open_rasterio(prod_path) as dataset:
-        #dataset.rio.write_crs('EPSG:32643', inplace=True)
-        #dataset = dataset.rio.reproject(dst_crs = 'EPSG:32643')
-        dataset.rio.set_spatial_dims(x_dim = 'x', y_dim = 'y', inplace=True)
-        dataset.squeeze().rio.to_raster(save_path, recalc_tranform = False)
+    with rio.open_rasterio(prod_path, decode_coords='all') as dataset:
+        ##Setting the CRS
+        dataset.rio.write_crs('EPSG:32643', inplace=True)
+
+        ##Setting Sparial Dimensions
+        dataset.rio.set_spatial_dims(x_dim='x', y_dim='y', inplace=True)
+        dataset.rio.write_coordinate_system(inplace=True)
+
+        ##Setting Transform
+        origin = (dataset.attrs['Product_ULMapX_Mtrs'], dataset.attrs['Product_ULMapY_Mtrs'])
+        transform = Affine(24.0, 0.0, origin[0],
+                           0.0, -24.0, origin[1])
+        dataset.rio.write_transform(transform, inplace=True)
+
+        ##Reprojecting
+        # dataset = dataset.rio.reproject(dst_crs = 'EPSG:4326')
+
+        ##Writing the Raster TIFF file
+        dataset.squeeze().rio.to_raster(save_path)
 
 
 if __name__ == '__main__':
