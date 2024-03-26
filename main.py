@@ -9,6 +9,7 @@ Created on 19 Mar, 2024 at 15:11
 # Importing Modules
 import pathlib
 
+import rasterio
 import rioxarray as rio
 from affine import Affine
 
@@ -29,19 +30,32 @@ def main(prod_path, save_dir):
         dataset.rio.write_crs('EPSG:32643', inplace=True)
 
         ##Setting Sparial Dimensions
-        dataset.rio.set_spatial_dims(x_dim='x', y_dim='y', inplace=True)
-        dataset.rio.write_coordinate_system(inplace=True)
+        # dataset.rio.set_spatial_dims(x_dim='x', y_dim='y', inplace=True)
+        # dataset.rio.write_coordinate_system(inplace=True)
+        # dataset.rio.write_grid_mapping(inplace=True)
 
         ##Setting Transform
-        origin = (dataset.attrs['Product_ULMapX_Mtrs'], dataset.attrs['Product_ULMapY_Mtrs'])
-        transform = Affine(24.0, 0.0, origin[0],
-                           0.0, -24.0, origin[1])
-        dataset.rio.write_transform(transform, inplace=True)
+        origin = (float(dataset.attrs['Product_ULMapX_Mtrs']), float(dataset.attrs['Product_ULMapY_Mtrs']))
+        res = (float(dataset.attrs['InputResolution_Across_mtrs']), float(dataset.attrs['InputResolution_Along_mtrs']))
+
+        transform = Affine(res[0], 0.0, origin[0],
+                           0.0, -res[1], origin[1])
+        transformer = rasterio.transform.AffineTransformer(transform)
+        #dataset.rio.write_transform(transform, inplace=True)
 
         ##Reprojecting
         # dataset = dataset.rio.reproject(dst_crs = 'EPSG:4326')
 
+        ##Setting x & y
+        (x_val, y_val) = (dataset.x.values - 0.5, dataset.y.values - 0.5)
+        row = transformer.xy(x_val, 0)[1]
+        dataset = dataset.assign_coords({'x': row})
+
+        col = transformer.xy(0, y_val)[0]
+        dataset = dataset.assign_coords({'y': col})
+
         ##Writing the Raster TIFF file
+        #dataset.rio.reproject(dst_crs='EPSG:32643', transform=transform, inplace=True)
         dataset.squeeze().rio.to_raster(save_path)
 
 
