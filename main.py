@@ -8,10 +8,10 @@ Created on 19 Mar, 2024 at 15:11
 
 # Importing Modules
 import pathlib
-
 import rasterio
+import xarray as xr
 import rioxarray as rio
-from affine import Affine
+import h5py as h5
 
 # Importing Custom Modules
 import browse_gui
@@ -25,38 +25,11 @@ def main(prod_path, save_dir):
 
     #data_h5 = h5.File(path, 'r')
 
-    with rio.open_rasterio(prod_path, decode_coords='all') as dataset:
-        ##Setting the CRS
-        dataset.rio.write_crs('EPSG:32643', inplace=True)
-
-        ##Setting Sparial Dimensions
-        # dataset.rio.set_spatial_dims(x_dim='x', y_dim='y', inplace=True)
-        # dataset.rio.write_coordinate_system(inplace=True)
-        # dataset.rio.write_grid_mapping(inplace=True)
-
-        ##Setting Transform
-        origin = (float(dataset.attrs['Product_ULMapX_Mtrs']), float(dataset.attrs['Product_ULMapY_Mtrs']))
-        res = (float(dataset.attrs['InputResolution_Across_mtrs']), float(dataset.attrs['InputResolution_Along_mtrs']))
-
-        transform = Affine(res[0], 0.0, origin[0],
-                           0.0, -res[1], origin[1])
-        transformer = rasterio.transform.AffineTransformer(transform)
-        #dataset.rio.write_transform(transform, inplace=True)
-
-        ##Reprojecting
-        # dataset = dataset.rio.reproject(dst_crs = 'EPSG:4326')
-
-        ##Setting x & y
-        (x_val, y_val) = (dataset.x.values - 0.5, dataset.y.values - 0.5)
-        row = transformer.xy(y_val, 0)[1]
-        col = transformer.xy(0, x_val)[0]
-
-        dataset = dataset.assign_coords({'x': col})
-        dataset = dataset.assign_coords({'y': row})
-
-        ##Writing the Raster TIFF file
-        #dataset.rio.reproject(dst_crs='EPSG:32643', transform=transform, inplace=True)
-        dataset.squeeze().rio.to_raster(save_path)
+    with rio.open_rasterio(prod_path) as dataset:
+        #dataset.rio.write_crs('EPSG:32643', inplace=True)
+        #dataset = dataset.rio.reproject(dst_crs = 'EPSG:32643')
+        dataset.rio.set_spatial_dims(x_dim = 'x', y_dim = 'y', inplace=True)
+        dataset.squeeze().rio.to_raster(save_path, recalc_tranform = False)
 
 
 if __name__ == '__main__':
