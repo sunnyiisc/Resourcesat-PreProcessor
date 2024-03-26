@@ -48,11 +48,11 @@ def main(prod_path, save_dir):
 
         ##Setting x & y
         (x_val, y_val) = (dataset.x.values - 0.5, dataset.y.values - 0.5)
-        row = transformer.xy(x_val, 0)[1]
-        dataset = dataset.assign_coords({'x': row})
+        row = transformer.xy(y_val, 0)[1]
+        col = transformer.xy(0, x_val)[0]
 
-        col = transformer.xy(0, y_val)[0]
-        dataset = dataset.assign_coords({'y': col})
+        dataset = dataset.assign_coords({'x': col})
+        dataset = dataset.assign_coords({'y': row})
 
         ##Writing the Raster TIFF file
         #dataset.rio.reproject(dst_crs='EPSG:32643', transform=transform, inplace=True)
