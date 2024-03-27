@@ -8,7 +8,7 @@ Created on 19 Mar, 2024 at 15:11
 
 # Importing Modules
 import pathlib
-import xarray as xr
+import h5py
 import rasterio
 import rioxarray as rio
 from affine import Affine
@@ -26,30 +26,35 @@ def main(prod_path, save_dir):
     #data_h5 = h5.File(path, 'r')
 
     with rio.open_rasterio(prod_path, engine='h5netcdf') as dataset:
+        ##Extracting Image Meta Parameters
+        origin = (float(dataset.attrs['Product_ULMapX_Mtrs']), float(dataset.attrs['Product_ULMapY_Mtrs']))
+        res = (float(dataset.attrs['InputResolution_Across_mtrs']), float(dataset.attrs['InputResolution_Along_mtrs']))
+
         ##Setting the CRS
-        #utm_crs = dataset.rio.estimate_utm_crs()
-        #dataset.rio.write_crs(utm_crs, inplace=True)
         dataset.rio.write_crs('EPSG:32643', inplace=True)
 
         ##Setting Sparial Dimensions
-        #dataset.rio.set_spatial_dims(x_dim='x', y_dim='y', inplace=True)
-        #dataset.rio.write_coordinate_system(inplace=True)
+        dataset.rio.set_spatial_dims(x_dim='x', y_dim='y', inplace=True)
+        dataset.rio.write_coordinate_system(inplace=True)
 
         ##Setting Transform
-        origin = (float( dataset.attrs['Product_ULMapX_Mtrs'] ), float( dataset.attrs['Product_ULMapY_Mtrs'] ))
-        res = (23.5, 23.5)
-        transform = Affine( res[0], 0.0, origin[0],0.0, -res[1], origin[1] )
+        transform = Affine( res[0], 0.0, origin[0],
+                            0.0, -res[1], origin[1] )
 
         transformer = rasterio.transform.AffineTransformer(transform)
         dataset.rio.write_transform(transform, inplace=True)
 
-
         ##Reprojecting
-        #dataset.rio.reproject(dst_crs='EPSG:32643', inplace=True)
         #dataset_reproj = dataset.rio.reproject(dst_crs = 'EPSG:4326')
 
-        ##Writing the Raster TIFF file
+        ##Setting Coords
+        (x_val, y_val) = (dataset.x.values, dataset.y.values)
+        row = transformer.xy(y_val, 0)[1]
+        col = transformer.xy(0, x_val)[0]
 
+        dataset = dataset.assign_coords({'x':col, 'y':row})
+
+        ##Writing the Raster TIFF file
         dataset.squeeze().rio.to_raster(save_path)
         #dataset_reproj.squeeze().rio.to_raster(save_dir.joinpath(prod_path.parent.stem + '_reproj' + '.tiff'))
 
