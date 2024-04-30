@@ -73,10 +73,10 @@ def main(prod_path, save_dir):
         #dataset_reproj.squeeze().rio.to_raster(save_dir.joinpath(prod_path.parent.stem + '_reproj' + '.tiff'))
 
 if __name__ == '__main__':
-    #prod_path = pathlib.Path(browse_gui.browse_file('Select the HDF file to be converted'))
-    #save_dir = pathlib.Path(browse_gui.browse_folder('Select the Folder to save the TIFF file'))
+    prod_path = pathlib.Path(browse_gui.browse_file('Select the HDF file to be converted'))
+    save_dir = pathlib.Path(browse_gui.browse_folder('Select the Folder to save the TIFF file'))
 
-    prod_path = pathlib.Path('Z://DQE//cvss//Resourcesat_Product//243757811_IRS-R2_L3_05-JAN-2024_STD_GEOREF_065970_099_061//BAND.h5')
-    save_dir = pathlib.Path('Z://DQE//cvss//Resourcesat_Product')
+    #prod_path = pathlib.Path('Z://DQE//cvss//Resourcesat_Product//243757811_IRS-R2_L3_05-JAN-2024_STD_GEOREF_065970_099_061//BAND.h5')
+    #save_dir = pathlib.Path('Z://DQE//cvss//Resourcesat_Product')
 
     main(prod_path, save_dir)
