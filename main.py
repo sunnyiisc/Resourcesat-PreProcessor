@@ -8,6 +8,8 @@ Created on 19 Mar, 2024 at 15:11
 
 # Importing Modules
 import pathlib
+
+import numpy as np
 import xarray as xr
 import rasterio
 import rioxarray as rio
