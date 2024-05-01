@@ -34,10 +34,10 @@ def read_h5_angles(prod_path):
 
     ##Resizing the angle bands to the Image data size
     dst_shp = data_h5['ImageData']['B2'].shape
-    sun_azi = resize(scan_pix, sun_azi_ang, dst_shp)
-    sun_ele = resize(scan_pix, sun_ele_ang, dst_shp)
-    sat_azi = resize(scan_pix, sat_azi_ang, dst_shp)
-    sat_ele = resize(scan_pix, sat_ele_ang, dst_shp)
+    sun_azi = (resize(scan_pix, sun_azi_ang, dst_shp) * 1e3).astype('uint16')
+    sun_ele = (resize(scan_pix, sun_ele_ang, dst_shp) * 1e3).astype('uint16')
+    sat_azi = (resize(scan_pix, sat_azi_ang, dst_shp) * 1e3).astype('uint16')
+    sat_ele = (resize(scan_pix, sat_ele_ang, dst_shp) * 1e3).astype('uint16')
 
     return(sat_azi, sat_ele, sun_azi, sun_ele)
 
@@ -46,11 +46,11 @@ def resize(scan_pix, ang, dst_shp):
     ##Getting the size of the angle band given
     sampling_size = scan_pix[1][1]
     size_scan_pix = (scan_pix[-1] / sampling_size) + 1
-    size_xy = tuple( size_scan_pix.astype('int') )[::-1]
+    size_xy = tuple( size_scan_pix.astype('int') )
 
     ## Creating the angle bands to 2D and interpolating to image size
-    ang_mat = np.reshape(ang, size_xy)     ##RS2=(30, 28), RS2A=(16, 14)
-    ang_img = cv2.resize(ang_mat, dst_shp, interpolation=cv2.INTER_NEAREST)
+    ang_mat = np.reshape(ang, size_xy)     ##size_xy is RS2=(28, 30), RS2A=(14, 16)
+    ang_img = cv2.resize(ang_mat, dst_shp[::-1], interpolation=cv2.INTER_NEAREST)
     return(ang_img)
 
 
