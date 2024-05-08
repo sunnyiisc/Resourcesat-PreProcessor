@@ -1,8 +1,10 @@
 """
 Created on 27 Mar, 2024 at 11:10
-    Title: reading_h5.py - ...
+    Title: reading_h5.py - Reading the HDF file for angle bands creation
     Description:
-        -   ...
+        -   Reading the HDF file for reading the angle grids
+        -   Interpolating the Grid to the data band size to get the angle bands
+        -   Exporting the data bands to be stacked along with the data bands
 @author: Supantha Sen, nrsc, ISRO
 """
 

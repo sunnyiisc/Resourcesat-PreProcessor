@@ -1,8 +1,13 @@
 """
 Created on 19 Mar, 2024 at 15:11
-    Title: main.py - ...
+    Title: main.py - Conversion of HDF to Georeferenced Band Stacked TIFF file
     Description:
-        -   ...
+        -   Reading the HDF data bands
+        -   Reading the HDF file projection and other information
+        -   Assign the projection to the data bands and setting the CRS
+        -   Transforming the Map XY to Projection Lat and Lon
+        -   Reading Angle bands from the H5
+        -   Stacking all the bands and exporting to TIFF
 @author: Supantha Sen, nrsc, ISRO
 """
 
