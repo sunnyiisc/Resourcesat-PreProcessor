@@ -34,10 +34,10 @@ def read_h5_angles(prod_path):
 
     ##Resizing the angle bands to the Image data size
     dst_shp = data_h5['ImageData']['B2'].shape
-    sun_azi = (resize(scan_pix, sun_azi_ang, dst_shp) * 1e3).astype('uint16')
-    sun_ele = (resize(scan_pix, sun_ele_ang, dst_shp) * 1e3).astype('uint16')
-    sat_azi = (resize(scan_pix, sat_azi_ang, dst_shp) * 1e3).astype('uint16')
-    sat_ele = (resize(scan_pix, sat_ele_ang, dst_shp) * 1e3).astype('uint16')
+    sun_azi = (resize(scan_pix, sun_azi_ang, dst_shp) * 1e2).astype('uint16')
+    sun_ele = ((90.0 - resize(scan_pix, sun_ele_ang, dst_shp)) * 1e2).astype('uint16')
+    sat_azi = (resize(scan_pix, sat_azi_ang, dst_shp) * 1e2).astype('uint16')
+    sat_ele = ((90 - resize(scan_pix, sat_ele_ang, dst_shp)) * 1e2).astype('uint16')
 
     return(sat_azi, sat_ele, sun_azi, sun_ele)
 
