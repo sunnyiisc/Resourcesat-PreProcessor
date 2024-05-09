@@ -43,6 +43,16 @@ def main(prod_path, save_dir):
         ##Setting the CRS
         if projection == 'UniverseTransverseMercator':
             crs = 'EPSG:' + '326' + str(zone)
+        elif projection == 'LambertConformalConicProjection':
+            ##Creating the porj4 string of the CRS from meta file
+            lat_0 = meta['MapOriginLat']
+            lon_0 = meta['MapOriginLon']
+            lat_1 = meta['StandardParallel1']
+            lat_2 = meta['StandardParallel2']
+            datum = meta['Datum']
+            proj4_str = '+proj=lcc +lat_0=' + lat_0 + ' +lon_0=' + lon_0 + ' +lat_1=' + lat_1 + ' +lat_2=' + lat_2 + ' +x_0=0.0 +y_0=0.0 +datum=' + datum + ' +unit=m +no_defs +type=crs'
+
+            crs = rasterio.CRS.from_proj4(proj4_str)
         dataset.rio.write_crs(crs, inplace=True)
 
         ##Setting Sparial Dimensions
