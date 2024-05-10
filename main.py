@@ -28,8 +28,9 @@ import reading_metafile
 ...
 
 
-def main(prod_path, save_dir):
+def main(prod_folder, save_dir):
 
+    prod_path = prod_folder.joinpath('BAND.h5')
     meta = reading_metafile.meta_read( prod_path.parent.joinpath('BAND_META.txt') )
 
 

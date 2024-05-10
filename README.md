@@ -3,7 +3,7 @@ Task: Converting the HDF Product to Georeferenced TIFF.
 
 This is applicable for the dataset of IRS Satellite Resourcesat Series which comprises of Resourcesat-2 and Resourcesat-2A Satellites.
 
-## Running the Program:
+## Running the Program (Single Mode):
 - Run the file 'main.py' [click here](main.py)
 - Select the '.h5' product path from the gui as follows:
 ![Screenshot of Product Selection GUI](Images/File_Selection-1.png "Product Selection GUI")
@@ -11,6 +11,15 @@ This is applicable for the dataset of IRS Satellite Resourcesat Series which com
 ![Screenshot of Save Path Selection GUI](Images/File_Selection-2.png "Savepath Selection GUI")
 - The code will run and then output will be as follows in the console:
 ![Screenshot of console output](Images/Result.png "Console Output")
+
+## Running the Program (Batch Mode):
+- Run the file 'main_batch.py' [click here](main_batch.py)
+- Select the directory where all the product folders (which contains the 'BAND.h5' and 'BAND_META.txt' file) are present from the gui as follows:
+![Screenshot of Directory containing Products Selection GUI](Images/File_Selection-1_batch.png "Directory of Product Selection GUI")
+- Select the folder path where to save the '.TIFF' files from the gui as follows:
+![Screenshot of Save Path Selection GUI](Images/File_Selection-2.png "Savepath Selection GUI")
+- The code will run and then outputs will be as follows in the console:
+![Screenshot of console output](Images/Result_batch.png "Console Output")
 
 ## Band Sequence
 The Band Sequence for LISS-3 and AwiFs sensor is as follows:
